@@ -82,11 +82,20 @@ const GSTInvoiceGenerator = () => {
     return invoiceData.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice * item.gstRate) / 100, 0)
   }
 
+  const calculateRoundOff = (total) => {
+    return Math.round(total) - total
+  }
+
   const calculateTotal = () => {
-    const total = calculateSubtotal() + calculateTotalGST()
+    const subtotal = calculateSubtotal()
+    const totalGST = calculateTotalGST()
+    const total = subtotal + totalGST
+    const roundOff = calculateRoundOff(total)
+    const finalTotal = total + roundOff
     return {
-      amount: total,
-      words: numberToWords(Math.round(total))
+      amount: finalTotal,
+      roundOff: roundOff,
+      words: numberToWords(Math.round(finalTotal))
     }
   }
 
@@ -332,6 +341,7 @@ const GSTInvoiceGenerator = () => {
         <div className="space-y-2">
           <p><strong>Subtotal:</strong> ₹{calculateSubtotal().toFixed(2)}</p>
           <p><strong>GST Amount:</strong> ₹{calculateTotalGST().toFixed(2)}</p>
+          <p><strong>Round Off:</strong> ₹{calculateTotal().roundOff.toFixed(2)}</p>
           <p><strong>Total Invoice Amount:</strong> ₹{calculateTotal().amount.toFixed(2)}</p>
           <p><strong>Amount in Words:</strong> {calculateTotal().words}</p>
         </div>
@@ -351,7 +361,7 @@ const GSTInvoiceGenerator = () => {
             totalAmount: calculateTotal().amount,
             amountInWords: calculateTotal().words,
             totalTaxInWords: numberToWords(Math.round(calculateTotalGST())),
-            roundOff: (Math.round(calculateTotal().amount) - calculateTotal().amount).toFixed(2),
+            roundOff: calculateTotal().roundOff.toFixed(2),
             taxSummary: {
               taxable0: invoiceData.items.filter(item => item.gstRate === 0).reduce((sum, item) => sum + item.quantity * item.unitPrice, 0).toFixed(2),
               taxable5: invoiceData.items.filter(item => item.gstRate === 5).reduce((sum, item) => sum + item.quantity * item.unitPrice, 0).toFixed(2),
