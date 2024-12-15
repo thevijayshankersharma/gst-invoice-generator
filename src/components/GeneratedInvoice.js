@@ -214,7 +214,7 @@ const GeneratedInvoice = ({ data }) => {
       </div>
 
       {/* Declaration */}
-      <div className="mt-4 text-[8px]">
+      <div className="mt-4 text-[12px]">
         <strong>Declaration:</strong>
         <p>
           I/We hereby certify that my/our Registration certificate under the GST Act 2017 is in force
